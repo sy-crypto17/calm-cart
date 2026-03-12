@@ -213,22 +213,45 @@
     </div>
 
     <div id="step-entertainment" class="step">
+        <h4 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px;">快樂保質期測試</h4>
+        <p style="font-size: 0.85em; color: #7f8c8d;">娛樂也是剛需，但我們要確保買到的是高品質的快樂。</p>
+
         <div class="form-group">
-            <label>預估會使用/享受幾次？ (或看幾個月)</label>
+            <label>1. 成本量化：請預估你會使用/享受它的次數？ (或看幾個月)</label>
             <input type="number" id="usage-times" placeholder="例如: 10">
+            <button onclick="calculateEntertainment()" style="margin-top: 10px; background-color: #f39c12;">先算單次成本</button>
+            <p id="ent-cost-display" style="font-weight: bold; color: #d35400; margin-top: 15px; display: none; padding: 10px; background-color: #fdf2e9; border-radius: 6px;"></p>
         </div>
-        <button onclick="calculateEntertainment()">計算單次成本</button>
-        
-        <div id="ent-eval" style="display: none; margin-top: 15px;">
-            <p id="ent-cost-display" style="font-weight: bold; color: #2980b9;"></p>
-            <label>你覺得花這些工作時間，換取這個體驗值得嗎？</label>
-            <div class="radio-group">
-                <label><input type="radio" name="ent-worth" value="yes"> 值得</label>
-                <label><input type="radio" name="ent-worth" value="no"> 太貴了</label>
+
+        <div id="ent-questions" style="display: none;">
+            <div class="form-group">
+                <label>2. 純粹動機：買下它完全是因為我自己真心喜歡，而不是為了跟風或向別人炫耀？</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="ent-q1" value="yes"> 是，我真心熱愛</label>
+                    <label><input type="radio" name="ent-q1" value="no"> 否，其實有點怕落伍</label>
+                </div>
             </div>
-            <button onclick="processEntertainment()">看結果</button>
+
+            <div class="form-group">
+                <label>3. 空間歸屬：家裡有確切的空間收納/展示它，且它不會變成未來的雜物嗎？</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="ent-q2" value="yes"> 有位置，絕對會珍惜</label>
+                    <label><input type="radio" name="ent-q2" value="no"> 否，買了可能積灰塵</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>4. 無可取代：我無法用手邊已有的東西（或免費資源）獲得類似的快樂嗎？</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="ent-q3" value="yes"> 無法取代，它很獨特</label>
+                    <label><input type="radio" name="ent-q3" value="no"> 否，其實有其他替代方案</label>
+                </div>
+            </div>
+
+            <button onclick="processEntertainment()">看診斷結果</button>
         </div>
-        <button style="background-color: #95a5a6;" onclick="resetForm()">重新開始</button>
+        
+        <button style="background-color: #95a5a6; margin-top: 10px;" onclick="resetForm()">重新開始</button>
     </div>
 
     <div id="result-step" class="step">
@@ -337,16 +360,26 @@
         const costPerUse = (userData.price / userData.times).toFixed(1);
         document.getElementById('ent-cost-display').innerText = `單次使用成本為：${costPerUse} 元`;
         document.getElementById('ent-eval').style.display = 'block';
+
+        // 顯示後續的三題靈魂拷問
+        document.getElementById('ent-questions').style.display = 'block';
     }
 
     function processEntertainment() {
-        const worth = document.querySelector('input[name="ent-worth"]:checked');
-        if (!worth) { alert('請選擇是否值得！'); return; }
+        // 抓取三題的選擇結果
+        const q1 = document.querySelector('input[name="ent-q1"]:checked');
+        const q2 = document.querySelector('input[name="ent-q2"]:checked');
+        const q3 = document.querySelector('input[name="ent-q3"]:checked');
 
-        if (worth.value === 'yes') {
-            showResult(`【建議購買】<br><br>情緒價值也是價值！既然單次成本你覺得划算，就買下來好好享受它帶來的快樂吧！`, 'bg-green');
+        if (!q1 || !q2 || !q3) { 
+            alert('請誠實回答完所有的快樂測試問題唷！'); 
+            return; 
+        }
+        // 必須三題都是 yes 才能過關
+        if (q1.value === 'yes' && q2.value === 'yes' && q3.value === 'yes') {
+            showResult(`【完美過關：購買高品質快樂】<br><br>情緒價值也是價值！既然單次成本你覺得划算，就買下來好好享受它帶來的快樂吧！`, 'bg-green');
         } else {
-            showResult(`【果斷放棄或冷靜】<br><br>既然覺得貴，這筆花費就不值得。<br>請直接關閉網頁，或者嚴格執行 <strong>${userData.cooldown} 小時冷靜期</strong>，衝動退去後你就會慶幸沒買了。`, 'bg-red');
+            showResult(`【踩煞車：發現衝動幻覺】<br><br>這筆消費可能混雜了「跟風、無處安放或可被替代」的因素。<br>請將它放入願望清單，並啟動 <strong>${userData.cooldown} 小時冷靜期</strong>。請把生命能量投資在能帶來長久喜悅的事物上！`, 'bg-yellow');
         }
     }
 
