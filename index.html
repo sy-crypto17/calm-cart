@@ -357,9 +357,11 @@
         userData.times = parseInt(document.getElementById('usage-times').value);
         if (!userData.times || userData.times <= 0) { alert('請輸入有效的使用次數！'); return; }
         
+        // 計算單次成本
         const costPerUse = (userData.price / userData.times).toFixed(1);
-        document.getElementById('ent-cost-display').innerText = `單次使用成本為：${costPerUse} 元`;
-        document.getElementById('ent-eval').style.display = 'block';
+        const display = document.getElementById('ent-cost-display');
+        display.innerHTML = `💰 單次享受的成本為：<strong>${costPerUse} 元</strong><br><span style="font-size: 0.85em; color: #555; font-weight: normal;">請帶著這個金額，回答下方的快樂測試：</span>`;
+        display.style.display = 'block';
 
         // 顯示後續的三題靈魂拷問
         document.getElementById('ent-questions').style.display = 'block';
