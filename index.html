@@ -95,6 +95,47 @@
         .bg-green { background-color: #d5f5e3; color: #27ae60; }
         .bg-red { background-color: #fadbd8; color: #c0392b; }
         .bg-yellow { background-color: #fcf3cf; color: #d4ac0d; }
+        /* 新增：3分鐘決策指南專屬排版 */
+        .fast-pass-container {
+            text-align: left;
+            padding: 5px;
+        }
+        .fast-pass-container h3 {
+            color: #27ae60;
+            margin-top: 0;
+            text-align: center;
+            border-bottom: 2px dashed #a9dfbf;
+            padding-bottom: 15px;
+            font-size: 1.3em;
+        }
+        .fast-pass-container > p {
+            font-size: 0.95em;
+            color: #555;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .decision-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .decision-list li {
+            background: rgba(255, 255, 255, 0.7);
+            border-left: 4px solid #2ecc71;
+            margin-bottom: 12px;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            font-size: 0.9em;
+            line-height: 1.6;
+            color: #444;
+        }
+        .decision-list li strong {
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
         
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
@@ -230,7 +271,30 @@
         // 快篩線判斷
         if (userData.price <= userData.wage) {
             document.getElementById('work-hours-display').style.display = 'none';
-            showResult(`【快篩通過】<br><br>這項商品價格低於你的時薪 (${userData.wage}元)。<br>請在 3 分鐘內憑直覺決定買或不買！別再浪費時間猶豫了！`, 'bg-green');
+            
+            // 建立漂亮的小短文 HTML 結構
+            const fastPassHTML = `
+                <div class="fast-pass-container">
+                    <h3>🎉 快篩通過：啟動 3 分鐘極速決策</h3>
+                    <p>這項商品僅 <strong>${userData.price} 元</strong>，低於您的時薪。請停止邏輯分析，立刻套用以下直覺指南：</p>
+                    <ul class="decision-list">
+                        <li>
+                            <strong>⏳ 第 1 分鐘：絕對心動測試</strong>
+                            問自己：「我是超級想要，還是只覺得便宜？」若沒有非要不可的衝動，請立刻關閉網頁。
+                        </li>
+                        <li>
+                            <strong>⏳ 第 2 分鐘：現實空間盤點</strong>
+                            問自己：「買來後家裡有確切的空位放嗎？這個週末就會立刻拿出來用嗎？」若答案為否，請果斷放棄。
+                        </li>
+                        <li>
+                            <strong>⏳ 第 3 分鐘：買錯免責權</strong>
+                            若順利通過前兩關，請直接結帳！請把這筆花費當作「了解自己喜好」的低成本實驗，省下糾結的時間去享受生活。
+                        </li>
+                    </ul>
+                </div>
+            `;
+            
+            showResult(fastPassHTML, 'bg-green');
         } else {
             // 高於時薪，顯示提示並進入追問
             document.getElementById('work-hours-display').innerHTML = hoursMessage;
