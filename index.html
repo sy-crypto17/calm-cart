@@ -140,14 +140,34 @@
     <div id="work-hours-display" class="work-hours-box"></div>
 
     <div id="step-tool" class="step">
+        <h4 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px;">J.I.T. 及時需求測試</h4>
+        <p style="font-size: 0.85em; color: #7f8c8d;">只要有一題答案為「否」，即視為無效需求。</p>
+        
         <div class="form-group">
-            <label>此商品能在「一個月內」解決你當下的痛點，或產生實質幫助嗎？</label>
+            <label>1. 現狀耗損：不買這項商品，下週我會多花明確的時間或金錢嗎？</label>
             <div class="radio-group">
-                <label><input type="radio" name="tool-solve" value="yes"> 能，立刻有用</label>
-                <label><input type="radio" name="tool-solve" value="no"> 否，只是買個安心</label>
+                <label><input type="radio" name="jit-q1" value="yes"> 會，損失具體可見</label>
+                <label><input type="radio" name="jit-q1" value="no"> 否，其實也不會怎樣</label>
             </div>
         </div>
-        <button onclick="processTool()">看結果</button>
+
+        <div class="form-group">
+            <label>2. 時間驗證：未來的 30 天內，我能在行事曆上排定確切的使用時段嗎？</label>
+            <div class="radio-group">
+                <label><input type="radio" name="jit-q2" value="yes"> 能，已預留好時間</label>
+                <label><input type="radio" name="jit-q2" value="no"> 否，等有空再說</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>3. 產出指標：使用一個月後，我能產出「具體可見」的成果嗎？</label>
+            <div class="radio-group">
+                <label><input type="radio" name="jit-q3" value="yes"> 能，產出明確</label>
+                <label><input type="radio" name="jit-q3" value="no"> 否，只是感覺變強</label>
+            </div>
+        </div>
+
+        <button onclick="processTool()">進行 J.I.T 驗證</button>
         <button style="background-color: #95a5a6;" onclick="resetForm()">重新開始</button>
     </div>
 
@@ -226,13 +246,23 @@
     }
 
     function processTool() {
-        const solve = document.querySelector('input[name="tool-solve"]:checked');
-        if (!solve) { alert('請選擇一個選項！'); return; }
+        // 抓取三題的選擇結果
+        const q1 = document.querySelector('input[name="jit-q1"]:checked');
+        const q2 = document.querySelector('input[name="jit-q2"]:checked');
+        const q3 = document.querySelector('input[name="jit-q3"]:checked');
 
-        if (solve.value === 'yes') {
-            showResult(`【建議購買】<br><br>這項工具能立即解決你的問題，這筆投資能為你省下更多時間與精力。請結帳並立刻開始使用！`, 'bg-green');
+        // 防呆：確保三題都已作答
+        if (!q1 || !q2 || !q3) { 
+            alert('請回答完所有的 J.I.T. 測試問題！'); 
+            return; 
+        }
+
+        // 嚴格檢驗邏輯：必須三個都是 'yes' 才算通過
+        if (q1.value === 'yes' && q2.value === 'yes' && q3.value === 'yes') {
+            showResult(`【通過 J.I.T 測試：立刻購買】<br><br>這項商品能確實解決當下痛點，且你已具備執行時間與明確目標。這是一筆極佳的投資，請結帳並立刻開始排程使用！`, 'bg-green');
         } else {
-            showResult(`【踩煞車】<br><br>知識焦慮不等於實際需求。<br>請將商品放入願望清單，並遵守系統設定的 <strong>${userData.cooldown} 小時冷靜期</strong>。時間到了若還是很想買再說！`, 'bg-yellow');
+            // 只要有一個 'no'，即判定為囤積或衝動
+            showResult(`【踩煞車：發現無效需求】<br><br>這項購買屬於「預防性焦慮」或「知識囤積」。<br>請將商品放入願望清單，並嚴格執行系統設定的 <strong>${userData.cooldown} 小時冷靜期</strong>。時間到了若還是很想買再說！`, 'bg-yellow');
         }
     }
 
