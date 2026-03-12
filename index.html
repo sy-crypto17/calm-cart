@@ -185,7 +185,7 @@
         <p style="font-size: 0.85em; color: #7f8c8d;">只要有一題答案為「否」，即視為無效需求。</p>
         
         <div class="form-group">
-            <label>1. 現狀耗損：不買這項商品，下週我會多花明確的時間或金錢嗎？</label>
+            <label>1. 現狀耗損：我現在的生活或工作，已經遇到「沒有它就卡關或很不方便」的情況了嗎？</label>
             <div class="radio-group">
                 <label><input type="radio" name="jit-q1" value="yes"> 會，損失具體可見</label>
                 <label><input type="radio" name="jit-q1" value="no"> 否，其實也不會怎樣</label>
@@ -201,9 +201,9 @@
         </div>
 
         <div class="form-group">
-            <label>3. 產出指標：使用一個月後，我能產出「具體可見」的成果嗎？</label>
+            <label>3. 微小改變：使用它之後，我能立刻在生活中做出哪一個「具體的小動作」嗎？</label>
             <div class="radio-group">
-                <label><input type="radio" name="jit-q3" value="yes"> 能，產出明確</label>
+                <label><input type="radio" name="jit-q3" value="yes"> 能，我腦海中有具體的畫面</label>
                 <label><input type="radio" name="jit-q3" value="no"> 否，只是感覺變強</label>
             </div>
         </div>
@@ -326,7 +326,7 @@
             showResult(`【通過 J.I.T 測試：立刻購買】<br><br>這項商品能確實解決當下痛點，且你已具備執行時間與明確目標。這是一筆極佳的投資，請結帳並立刻開始排程使用！`, 'bg-green');
         } else {
             // 只要有一個 'no'，即判定為囤積或衝動
-            showResult(`【踩煞車：發現無效需求】<br><br>這項購買屬於「預防性焦慮」或「知識囤積」。<br>請將商品放入願望清單，並嚴格執行系統設定的 <strong>${userData.cooldown} 小時冷靜期</strong>。時間到了若還是很想買再說！`, 'bg-yellow');
+            showResult(`【踩煞車：發現無效需求】<br><br>這項購買屬於「預防性焦慮」或「知識囤積」。<br>請將商品放入願望清單，並嚴格執行系統設定的 <strong>${userData.cooldown} 小時冷靜期</strong>。允許自己現在還不需要它，把錢和時間留給當下更重要的事！`, 'bg-yellow');
         }
     }
 
