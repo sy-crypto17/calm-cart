@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>購物決策萬用計算機</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .step {
+            display: none;
+        }
+        .step.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            line-height: 1.5;
+        }
+        .work-hours-box {
+            display: none;
+            background-color: #e8f8f5;
+            border-left: 5px solid #1abc9c;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 0.95em;
+            line-height: 1.6;
+            animation: fadeIn 0.5s;
+        }
+        .work-hours-box strong {
+            color: #e74c3c;
+            font-size: 1.2em;
+        }
+        .bg-green { background-color: #d5f5e3; color: #27ae60; }
+        .bg-red { background-color: #fadbd8; color: #c0392b; }
+        .bg-yellow { background-color: #fcf3cf; color: #d4ac0d; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+        }
+        .radio-group label {
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🛒 購物決策計算機</h2>
+
+    <div id="step1" class="step active">
+        <div class="form-group">
+            <label>1. 你的時薪 (台幣):</label>
+            <input type="number" id="wage" placeholder="例如: 300">
+        </div>
+        <div class="form-group">
+            <label>2. 商品價格 (台幣):</label>
+            <input type="number" id="price" placeholder="例如: 850">
+        </div>
+        <div class="form-group">
+            <label>3. 商品類型:</label>
+            <select id="category">
+                <option value="tool">工具 / 知識型 (書、課程)</option>
+                <option value="entertainment">娛樂 / 情緒型 (周邊、訂閱)</option>
+            </select>
+        </div>
+        <button onclick="processStep1()">下一步</button>
+    </div>
+
+    <div id="work-hours-display" class="work-hours-box"></div>
+
+    <div id="step-tool" class="step">
+        <div class="form-group">
+            <label>此商品能在「一個月內」解決你當下的痛點，或產生實質幫助嗎？</label>
+            <div class="radio-group">
+                <label><input type="radio" name="tool-solve" value="yes"> 能，立刻有用</label>
+                <label><input type="radio" name="tool-solve" value="no"> 否，只是買個安心</label>
+            </div>
+        </div>
+        <button onclick="processTool()">看結果</button>
+        <button style="background-color: #95a5a6;" onclick="resetForm()">重新開始</button>
+    </div>
+
+    <div id="step-entertainment" class="step">
+        <div class="form-group">
+            <label>預估會使用/享受幾次？ (或看幾個月)</label>
+            <input type="number" id="usage-times" placeholder="例如: 10">
+        </div>
+        <button onclick="calculateEntertainment()">計算單次成本</button>
+        
+        <div id="ent-eval" style="display: none; margin-top: 15px;">
+            <p id="ent-cost-display" style="font-weight: bold; color: #2980b9;"></p>
+            <label>你覺得花這些工作時間，換取這個體驗值得嗎？</label>
+            <div class="radio-group">
+                <label><input type="radio" name="ent-worth" value="yes"> 值得</label>
+                <label><input type="radio" name="ent-worth" value="no"> 太貴了</label>
+            </div>
+            <button onclick="processEntertainment()">看結果</button>
+        </div>
+        <button style="background-color: #95a5a6;" onclick="resetForm()">重新開始</button>
+    </div>
+
+    <div id="result-step" class="step">
+        <div id="result-content" class="result-box"></div>
+        <button onclick="resetForm()">重新評估其他商品</button>
+    </div>
+
+</div>
+
+<script>
+    let userData = {};
+
+    function processStep1() {
+        userData.wage = parseInt(document.getElementById('wage').value);
+        userData.price = parseInt(document.getElementById('price').value);
+        userData.category = document.getElementById('category').value;
+
+        if (!userData.wage || !userData.price) {
+            alert('請輸入時薪與商品價格！');
+            return;
+        }
+
+        // 1. 工時計算邏輯
+        const workHours = (userData.price / userData.wage).toFixed(1);
+        const workDays = (workHours / 8).toFixed(1); 
+        
+        // 2. 自動連動冷靜期邏輯：每 8 小時工時（1工作天） = 24 小時冷靜期，最低保障 24 小時
+        // 運用 Math.ceil 無條件進位，確保就算只要工作 1.5 天，也會直接啟動 48 小時的冷靜期
+        userData.cooldown = Math.max(24, Math.ceil(workHours / 8) * 24);
+        
+        let hoursMessage = `💡 <strong>生命能量換算</strong><br>這項商品售價 ${userData.price} 元。<br>依您的時薪計算，您需要連續工作 <strong>${workHours} 小時</strong> 才能買下它。`;
+        
+        // 顯示工作天數與系統自動派發的冷靜期
+        if (workHours >= 8) {
+            hoursMessage += `<br>（相當於您 <strong>${workDays} 個工作天</strong> 的辛苦勞動！）`;
+        }
+        
+        hoursMessage += `<br><br>⏳ 系統已為此商品自動綁定 <strong>${userData.cooldown} 小時</strong> 的決策冷靜期。`;
+
+        // 快篩線判斷
+        if (userData.price <= userData.wage) {
+            document.getElementById('work-hours-display').style.display = 'none';
+            showResult(`【快篩通過】<br><br>這項商品價格低於你的時薪 (${userData.wage}元)。<br>請在 3 分鐘內憑直覺決定買或不買！別再浪費時間猶豫了！`, 'bg-green');
+        } else {
+            // 高於時薪，顯示提示並進入追問
+            document.getElementById('work-hours-display').innerHTML = hoursMessage;
+            document.getElementById('work-hours-display').style.display = 'block';
+            
+            document.getElementById('step1').classList.remove('active');
+            if (userData.category === 'tool') {
+                document.getElementById('step-tool').classList.add('active');
+            } else {
+                document.getElementById('step-entertainment').classList.add('active');
+            }
+        }
+    }
+
+    function processTool() {
+        const solve = document.querySelector('input[name="tool-solve"]:checked');
+        if (!solve) { alert('請選擇一個選項！'); return; }
+
+        if (solve.value === 'yes') {
+            showResult(`【建議購買】<br><br>這項工具能立即解決你的問題，這筆投資能為你省下更多時間與精力。請結帳並立刻開始使用！`, 'bg-green');
+        } else {
+            showResult(`【踩煞車】<br><br>知識焦慮不等於實際需求。<br>請將商品放入願望清單，並遵守系統設定的 <strong>${userData.cooldown} 小時冷靜期</strong>。時間到了若還是很想買再說！`, 'bg-yellow');
+        }
+    }
+
+    function calculateEntertainment() {
+        userData.times = parseInt(document.getElementById('usage-times').value);
+        if (!userData.times || userData.times <= 0) { alert('請輸入有效的使用次數！'); return; }
+        
+        const costPerUse = (userData.price / userData.times).toFixed(1);
+        document.getElementById('ent-cost-display').innerText = `單次使用成本為：${costPerUse} 元`;
+        document.getElementById('ent-eval').style.display = 'block';
+    }
+
+    function processEntertainment() {
+        const worth = document.querySelector('input[name="ent-worth"]:checked');
+        if (!worth) { alert('請選擇是否值得！'); return; }
+
+        if (worth.value === 'yes') {
+            showResult(`【建議購買】<br><br>情緒價值也是價值！既然單次成本你覺得划算，就買下來好好享受它帶來的快樂吧！`, 'bg-green');
+        } else {
+            showResult(`【果斷放棄或冷靜】<br><br>既然覺得貴，這筆花費就不值得。<br>請直接關閉網頁，或者嚴格執行 <strong>${userData.cooldown} 小時冷靜期</strong>，衝動退去後你就會慶幸沒買了。`, 'bg-red');
+        }
+    }
+
+    function showResult(text, colorClass) {
+        document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+        document.getElementById('work-hours-display').style.display = 'none';
+        
+        const resultStep = document.getElementById('result-step');
+        const resultContent = document.getElementById('result-content');
+        
+        resultContent.className = 'result-box ' + colorClass;
+        resultContent.innerHTML = text;
+        resultStep.classList.add('active');
+    }
+
+    function resetForm() {
+        document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+        document.getElementById('work-hours-display').style.display = 'none';
+        document.getElementById('step1').classList.add('active');
+        document.getElementById('ent-eval').style.display = 'none';
+        
+        document.getElementById('wage').value = userData.wage || ''; 
+        document.getElementById('price').value = '';
+        document.getElementById('usage-times').value = '';
+        
+        document.querySelectorAll('input[type="radio"]').forEach(radio => radio.checked = false);
+    }
+</script>
+
+</body>
+</html>
